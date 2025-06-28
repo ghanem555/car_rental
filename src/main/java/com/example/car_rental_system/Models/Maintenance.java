@@ -1,4 +1,4 @@
-package Models;
+package com.example.car_rental_system.Models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ public class Maintenance {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "maintenance_id")
-    private Integer maintenanceId;
+    private Long maintenanceId;
 
     @ManyToOne
     @JoinColumn(name = "plate_number", nullable = false)

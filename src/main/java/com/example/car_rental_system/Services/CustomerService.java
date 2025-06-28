@@ -1,7 +1,7 @@
-package Services;
+package com.example.car_rental_system.Services;
 
-import Models.Customer;
-import Repository.CustomerRepository;
+import com.example.car_rental_system.Models.Customer;
+import com.example.car_rental_system.Repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,5 +41,22 @@ public class CustomerService {
 
     public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
+    }
+    public List<Customer> searchByFirstName(String firstName) {
+        return customerRepository.findAll().stream()
+                .filter(c -> c.getFirstName().equalsIgnoreCase(firstName))
+                .toList();
+    }
+
+    public List<Customer> searchByLastName(String lastName) {
+        return customerRepository.findAll().stream()
+                .filter(c -> c.getLastName().equalsIgnoreCase(lastName))
+                .toList();
+    }
+
+    public List<Customer> searchByEmail(String email) {
+        return customerRepository.findAll().stream()
+                .filter(c -> c.getEmail().equalsIgnoreCase(email))
+                .toList();
     }
 }

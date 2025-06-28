@@ -1,4 +1,4 @@
-package Models;
+package com.example.car_rental_system.Models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -39,8 +39,9 @@ public class Customer {
     @Column(nullable = false)
     private String address;
 
-    @OneToMany(mappedBy = "customer")
-    private List<Rental> rentals = new ArrayList<>();
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    private List<Rental> rentals;
+
 
 
 }

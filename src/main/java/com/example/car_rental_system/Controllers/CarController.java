@@ -1,7 +1,8 @@
-package Controllers;
+package com.example.car_rental_system.Controllers;
 
-import Models.Car;
-import Services.CarService;
+import com.example.car_rental_system.Models.Car;
+import com.example.car_rental_system.Models.CarStatus;
+import com.example.car_rental_system.Services.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,4 +38,19 @@ public class CarController {
     public void deleteCar(@PathVariable String plateNumber) {
         carService.deleteCar(plateNumber);
     }
+    @GetMapping("/search/brand")
+    public List<Car> searchByBrand(@RequestParam String brand) {
+        return carService.searchByBrand(brand);
+    }
+
+    @GetMapping("/search/model")
+    public List<Car> searchByModel(@RequestParam String model) {
+        return carService.searchByModel(model);
+    }
+
+    @GetMapping("/search/status")
+    public List<Car> searchByStatus(@RequestParam CarStatus status) {
+        return carService.searchByStatus(status);
+    }
+
 }

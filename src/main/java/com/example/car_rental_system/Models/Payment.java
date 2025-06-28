@@ -1,4 +1,4 @@
-package Models;
+package com.example.car_rental_system.Models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,7 +19,7 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")
-    private Integer paymentId;
+    private Long paymentId;
 
     @ManyToOne
     @JoinColumn(name = "rental_id", nullable = false)
@@ -34,6 +34,11 @@ public class Payment {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentMethod method;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CurrencyType currency;
+
 
     @Column(name = "transaction_id")
     private String transactionId;

@@ -1,5 +1,6 @@
-package Models;
+package com.example.car_rental_system.Models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,10 +41,11 @@ public class Car {
 
     @ManyToOne
     @JoinColumn(name = "type_name", nullable = false)
+    @JsonBackReference
     private CarType carType;
 
-    @OneToMany(mappedBy = "car")
-    private List<Rental> rentals = new ArrayList<>();
+    @OneToMany(mappedBy = "car", fetch = FetchType.LAZY)
+    private List<Rental> rentals;
 
     @OneToMany(mappedBy = "car")
     private List<Maintenance> maintenanceRecords = new ArrayList<>();

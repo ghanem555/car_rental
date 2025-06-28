@@ -1,5 +1,6 @@
-package Models;
+package com.example.car_rental_system.Models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,6 +25,7 @@ public class CarType {
     private String description;
 
     @OneToMany(mappedBy = "carType")
+    @JsonManagedReference
     private List<Car> cars = new ArrayList<>();
 
 }
