@@ -1,8 +1,12 @@
 package com.example.car_rental_system.Controllers;
 
+import com.example.car_rental_system.DTO.CustomerRequsetDto;
+import com.example.car_rental_system.DTO.CustomerResponseDto;
 import com.example.car_rental_system.Models.Customer;
 import com.example.car_rental_system.Services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,45 +19,50 @@ public class CustomerController {
 
 
     @PostMapping
-    public Customer createCustomer(@RequestBody Customer customer) {
-        return customerService.createCustomer(customer);
+    public ResponseEntity<CustomerResponseDto> createCustomer( @RequestBody CustomerRequsetDto customerRequestDTO) {
+        CustomerResponseDto response = customerService.createCustomer(customerRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    public List<Customer> getAllCustomers() {
-        return customerService.getAllCustomers();
+    public ResponseEntity<List<CustomerResponseDto>> getAllCustomers() {
+        List<CustomerResponseDto> customers = customerService.getAllCustomers();
+        return ResponseEntity.ok(customers);
     }
 
-
     @GetMapping("/{id}")
-    public Customer getCustomer(@PathVariable long id) {
-        return customerService.getCustomerById(id);
+    public ResponseEntity<CustomerResponseDto> getCustomerById(@PathVariable Long id) {
+        CustomerResponseDto customer = customerService.getCustomerById(id);
+        return ResponseEntity.ok(customer);
     }
 
 
     @PutMapping("/{id}")
-    public Customer updateCustomer(@PathVariable long id, @RequestBody Customer customer) {
-        return customerService.updateCustomer(id, customer);
+    public ResponseEntity<CustomerResponseDto> updateCustomer(
+            @PathVariable Long id,
+             @RequestBody CustomerRequsetDto customerRequestDTO) {
+        CustomerResponseDto updatedCustomer = customerService.updateCustomer(id, customerRequestDTO);
+        return ResponseEntity.ok(updatedCustomer);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCustomer(@PathVariable long id) {
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
+        return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/search/first-name")
-    public List<Customer> searchByFirstName(@RequestParam String firstName) {
-        return customerService.searchByFirstName(firstName);
-    }
-
-    @GetMapping("/search/last-name")
-    public List<Customer> searchByLastName(@RequestParam String lastName) {
-        return customerService.searchByLastName(lastName);
-    }
-
-    @GetMapping("/search/email")
-    public List<Customer> searchByEmail(@RequestParam String email) {
-        return customerService.searchByEmail(email);
-    }
+//    @GetMapping("/search/first-name")
+//    public List<Customer> searchByFirstName(@RequestParam String firstName) {
+//        return customerService.searchByFirstName(firstName);
+//    }
+//
+//    @GetMapping("/search/last-name")
+//    public List<Customer> searchByLastName(@RequestParam String lastName) {
+//        return customerService.searchByLastName(lastName);
+//    }
+//
+//    @GetMapping("/search/email")
+//    public List<Customer> searchByEmail(@RequestParam String email) {
+//        return customerService.searchByEmail(email);
+//    }
 
 }

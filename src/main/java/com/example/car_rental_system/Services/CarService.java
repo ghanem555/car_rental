@@ -1,65 +1,73 @@
 package com.example.car_rental_system.Services;
 
+import com.example.car_rental_system.DTO.CarRequestDto;
+import com.example.car_rental_system.DTO.CarResponseDto;
+import com.example.car_rental_system.Mapper.CarMapper;
 import com.example.car_rental_system.Models.Car;
 import com.example.car_rental_system.Models.CarStatus;
+import com.example.car_rental_system.Models.CarType;
 import com.example.car_rental_system.Repository.CarRepository;
 import com.example.car_rental_system.Repository.CarTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CarService {
     private final CarRepository carRepository;
     private final CarTypeRepository carTypeRepository;
-    public Car createCar(Car car) {
-        // Verify car type exists
-        carTypeRepository.findById(car.getCarType().getTypeName())
+    private final CarMapper carMapper;
+
+    public CarResponseDto createCar(CarRequestDto carRequestDTO) {
+        CarType carType = carTypeRepository.findById(carRequestDTO.getTypeName())
                 .orElseThrow(() -> new RuntimeException("CarType not found"));
-        return carRepository.save(car);
+
+        if (carRepository.existsById(carRequestDTO.getPlateNumber())) {
+            throw new RuntimeException("Car with plate number " + carRequestDTO.getPlateNumber() + " already exists");
+        }
+        Car car = carMapper.toEntity(carRequestDTO, carType);
+        Car savedCar = carRepository.save(car);
+        return carMapper.toDto(savedCar);
     }
 
-    public List<Car> getAllCars() {
-        return carRepository.findAll();
+    public List<CarResponseDto> getAllCars() {
+        return carRepository.findAll().stream()
+                .map(carMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public Car getCarByPlateNumber(String plateNumber) {
-        return carRepository.findById(plateNumber)
+    public CarResponseDto getCarByPlateNumber(String plateNumber) {
+        Car car = carRepository.findById(plateNumber)
                 .orElseThrow(() -> new RuntimeException("Car not found with plateNumber: " + plateNumber));
+        return carMapper.toDto(car);
     }
 
-    public Car updateCar(String plateNumber, Car carDetails) {
-        Car car = getCarByPlateNumber(plateNumber);
-        car.setBrand(carDetails.getBrand());
-        car.setModel(carDetails.getModel());
-        car.setDailyRate(carDetails.getDailyRate());
-        car.setStatus(carDetails.getStatus());
-        car.setLastMaintenance(carDetails.getLastMaintenance());
-        car.setCarType(carDetails.getCarType());
-        return carRepository.save(car);
+    public CarResponseDto updateCar(String plateNumber, CarRequestDto carRequestDTO) {
+        Car existingCar = carRepository.findById(plateNumber)
+                .orElseThrow(() -> new RuntimeException("Car not found with plateNumber: " + plateNumber));
+
+        CarType carType = carTypeRepository.findById(carRequestDTO.getTypeName())
+                .orElseThrow(() -> new RuntimeException("CarType not found"));
+
+        // Update only allowed fields (excluding plateNumber)
+        existingCar.setBrand(carRequestDTO.getBrand());
+        existingCar.setModel(carRequestDTO.getModel());
+        existingCar.setDailyRate(carRequestDTO.getDailyRate());
+        existingCar.setCarType(carType);
+
+        Car updatedCar = carRepository.save(existingCar);
+        return carMapper.toDto(updatedCar);
     }
 
     public void deleteCar(String plateNumber) {
+        if (!carRepository.existsById(plateNumber)) {
+            throw new RuntimeException("Car not found with plateNumber: " + plateNumber);
+        }
         carRepository.deleteById(plateNumber);
     }
 
-    public List<Car> searchByBrand(String brand) {
-        return carRepository.findAll().stream()
-                .filter(car -> car.getBrand().equalsIgnoreCase(brand))
-                .toList();
-    }
 
-    public List<Car> searchByModel(String model) {
-        return carRepository.findAll().stream()
-                .filter(car -> car.getModel().equalsIgnoreCase(model))
-                .toList();
-    }
-
-    public List<Car> searchByStatus(CarStatus status) {
-        return carRepository.findAll().stream()
-                .filter(car -> car.getStatus() == status)
-                .toList();
-    }
 }

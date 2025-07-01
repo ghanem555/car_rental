@@ -1,6 +1,12 @@
 package com.example.car_rental_system.Controllers;
+import com.example.car_rental_system.DTO.RentalRequsetDto;
+import com.example.car_rental_system.DTO.RentalResponseDto;
+import com.example.car_rental_system.Models.Car;
+import com.example.car_rental_system.Models.CarStatus;
 import com.example.car_rental_system.Models.Rental;
 import com.example.car_rental_system.Services.RentalService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -14,28 +20,50 @@ public class RentalController {
     }
 
     @PostMapping
-    public Rental createRental(@RequestBody Rental rental) {
-        return rentalService.createRental(rental);
+    public ResponseEntity<RentalResponseDto> createRental( @RequestBody RentalRequsetDto rentalRequsetDto) {
+        RentalResponseDto response = rentalService.createRental(rentalRequsetDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+
     @GetMapping
-    public List<Rental> getAllRentals() {
-        return rentalService.getAllRentals();
+    public ResponseEntity<List<RentalResponseDto>> getAllRentals() {
+        List<RentalResponseDto> rentals = rentalService.getAllRentals();
+        return ResponseEntity.ok(rentals);
     }
 
     @GetMapping("/{id}")
-    public Rental getRentalById(@PathVariable long id) {
-        return rentalService.getRentalById(id);
+    public ResponseEntity<RentalResponseDto> getRentalById(@PathVariable Long id) {
+        RentalResponseDto rental = rentalService.getRentalById(id);
+        return ResponseEntity.ok(rental);
     }
 
     @PutMapping("/{id}")
-    public Rental updateRental(@PathVariable long id, @RequestBody Rental rental) {
-        return rentalService.updateRental(id, rental);
+    public ResponseEntity<RentalResponseDto> updateRental(
+            @PathVariable Long id,
+             @RequestBody RentalRequsetDto rentalRequsetDto) {
+        RentalResponseDto updatedRental = rentalService.updateRental(id, rentalRequsetDto);
+        return ResponseEntity.ok(updatedRental);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteRental(@PathVariable long id) {
+    public ResponseEntity<Void> deleteRental(@PathVariable Long id) {
         rentalService.deleteRental(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/search/plateNumber")
+    public ResponseEntity<List<RentalResponseDto>> searchByPlateNumber(@RequestParam String plateNumber) {
+        List<RentalResponseDto> rentals = rentalService.searchByPlateNumber(plateNumber);
+        return ResponseEntity.ok(rentals);
+    }
+
+    @GetMapping("/by-customer/{customerId}")
+    public ResponseEntity<List<RentalResponseDto>> getRentalsByCustomerId(
+            @PathVariable Long customerId) {
+        List<RentalResponseDto> rentals = rentalService.getRentalsByCustomerId(customerId);
+        return ResponseEntity.ok(rentals);
     }
     
 }

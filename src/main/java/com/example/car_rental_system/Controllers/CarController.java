@@ -1,10 +1,15 @@
 package com.example.car_rental_system.Controllers;
 
+import com.example.car_rental_system.DTO.CarRequestDto;
+import com.example.car_rental_system.DTO.CarResponseDto;
 import com.example.car_rental_system.Models.Car;
 import com.example.car_rental_system.Models.CarStatus;
 import com.example.car_rental_system.Services.CarService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -15,42 +20,37 @@ public class CarController {
     private CarService carService;
 
     @PostMapping
-    public Car createCar(@RequestBody Car car) {
-        return carService.createCar(car);
+    public ResponseEntity<CarResponseDto> createCar(@RequestBody CarRequestDto carRequestDTO) {
+        CarResponseDto response = carService.createCar(carRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    public List<Car> getAllCars() {
-        return carService.getAllCars();
+    public ResponseEntity<List<CarResponseDto>> getAllCars() {
+        List<CarResponseDto> cars = carService.getAllCars();
+        return ResponseEntity.ok(cars);
     }
 
     @GetMapping("/{plateNumber}")
-    public Car getCar(@PathVariable String plateNumber) {
-        return carService.getCarByPlateNumber(plateNumber);
+    public ResponseEntity<CarResponseDto> getCarByPlateNumber(@PathVariable String plateNumber) {
+        CarResponseDto car = carService.getCarByPlateNumber(plateNumber);
+        return ResponseEntity.ok(car);
     }
 
+
     @PutMapping("/{plateNumber}")
-    public Car updateCar(@PathVariable String plateNumber, @RequestBody Car car) {
-        return carService.updateCar(plateNumber, car);
+    public ResponseEntity<CarResponseDto> updateCar(
+            @PathVariable String plateNumber,
+             @RequestBody CarRequestDto carRequestDTO) {
+        CarResponseDto updatedCar = carService.updateCar(plateNumber, carRequestDTO);
+        return ResponseEntity.ok(updatedCar);
     }
 
     @DeleteMapping("/{plateNumber}")
-    public void deleteCar(@PathVariable String plateNumber) {
+    public ResponseEntity<Void> deleteCar(@PathVariable String plateNumber) {
         carService.deleteCar(plateNumber);
-    }
-    @GetMapping("/search/brand")
-    public List<Car> searchByBrand(@RequestParam String brand) {
-        return carService.searchByBrand(brand);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/search/model")
-    public List<Car> searchByModel(@RequestParam String model) {
-        return carService.searchByModel(model);
-    }
-
-    @GetMapping("/search/status")
-    public List<Car> searchByStatus(@RequestParam CarStatus status) {
-        return carService.searchByStatus(status);
-    }
 
 }

@@ -1,6 +1,10 @@
 package com.example.car_rental_system.Controllers;
+import com.example.car_rental_system.DTO.CarTypeRequsetDto;
+import com.example.car_rental_system.DTO.CarTypeResponseDto;
 import com.example.car_rental_system.Models.CarType;
 import com.example.car_rental_system.Services.CarTypeService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -14,27 +18,37 @@ public class CarTypeController {
     }
 
     @PostMapping
-    public CarType createCarType(@RequestBody CarType carType) {
-        return carTypeService.createCarType(carType);
+    public ResponseEntity<CarTypeResponseDto> createCarType(
+           @RequestBody CarTypeRequsetDto carTypeRequestDto) {
+        CarTypeResponseDto response = carTypeService.createCarType(carTypeRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping
-    public List<CarType> getAllCarTypes() {
-        return carTypeService.getAllCarTypes();
+    public ResponseEntity<List<CarTypeResponseDto>> getAllCarTypes() {
+        List<CarTypeResponseDto> carTypes = carTypeService.getAllCarTypes();
+        return ResponseEntity.ok(carTypes);
     }
 
     @GetMapping("/{typeName}")
-    public CarType getCarTypeById(@PathVariable String typeName) {
-        return carTypeService.getCarTypeById(typeName);
+    public ResponseEntity<CarTypeResponseDto> getCarTypeById(
+            @PathVariable String typeName) {
+        CarTypeResponseDto carType = carTypeService.getCarTypeById(typeName);
+        return ResponseEntity.ok(carType);
     }
 
     @PutMapping("/{typeName}")
-    public CarType updateCarType(@PathVariable String typeName, @RequestBody CarType carType) {
-        return carTypeService.updateCarType(typeName, carType);
+    public ResponseEntity<CarTypeResponseDto> updateCarType(
+            @PathVariable String typeName,
+            @RequestBody CarTypeRequsetDto carTypeRequestDto) {
+        CarTypeResponseDto updatedCarType = carTypeService.updateCarType(typeName, carTypeRequestDto);
+        return ResponseEntity.ok(updatedCarType);
     }
 
     @DeleteMapping("/{typeName}")
-    public void deleteCarType(@PathVariable String typeName) {
+    public ResponseEntity<Void> deleteCarType(
+            @PathVariable String typeName) {
         carTypeService.deleteCarType(typeName);
+        return ResponseEntity.noContent().build();
     }
 }
